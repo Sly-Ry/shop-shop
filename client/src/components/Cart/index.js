@@ -16,6 +16,14 @@ const Cart = () => {
     dispatch({ type: TOGGLE_CART });
   };
 
+  function calculateTotal() {
+    let sum = 0;
+    state.cart.forEach(item => {
+      sum += item.price * item.purchaseQuantity;
+    });
+    return sum.toFixed(2);
+  }
+
   // If cartOpen is false, the component will return a much smaller <div>. 
   if (!state.cartOpen) {
     return (
@@ -29,17 +37,21 @@ const Cart = () => {
     );
   }
 
+  console.log(state);
+
   return (
     <div className="cart">
-      {/* This handler will toggle the cartOpen value whenever the [close] text is clicked */}
       <div className="close" onClick={toggleCart}>[close]</div>
       <h2>Shopping Cart</h2>
-      <div>
-          <CartItem item={{name:'Camera', image:'camera.jpg', price:5, purchaseQuantity:3}} />
-          <CartItem item={{name:'Soap', image:'soap.jpg', price:6, purchaseQuantity:4}} />
-
+      {state.cart.length ? (
+        <div>
+          {/* The items on state.cart are mapped into a series of <CartItem /> components. */}
+          {state.cart.map(item => (
+            <CartItem key={item._id} item={item} />
+          ))}
           <div className="flex-row space-between">
-            <strong>Total: $0</strong>
+            {/* The calculateTotal() function is called inside of the <strong> element to display the total amount.  */}
+            <strong>Total: ${calculateTotal()}</strong>
             {
               Auth.loggedIn() ?
                 <button>
@@ -50,6 +62,15 @@ const Cart = () => {
             }
           </div>
         </div>
+      ) : (
+        // We've also wrapped the main shopping cart content in a ternary expression to display a different message if state.cart.length is zero.
+        <h3>
+          <span role="img" aria-label="shocked">
+            😱
+          </span>
+          You haven't added anything to your cart yet!
+        </h3>
+      )}
     </div>
   );
 };
