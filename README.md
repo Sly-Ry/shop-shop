@@ -64,3 +64,6 @@ With the IndexedDB database, we'll accomplish the following two main performance
 We'll store all of the product and category data from the database in IndexedDB. This way, even without an internet connection, users can still navigate the application, view items, and even add items to their shopping cart.
 
 If the user leaves the application and comes back later, we'll have persisted the items in their shopping cart. A user is more likely to complete their order if they don't have to add everything back into the cart!
+
+* We used a custom function, but there are libraries out there that offer help in working with browser storage. Try a library called LocalForage (Links to an external site.) if you're ever interested!
+

@@ -6,6 +6,7 @@ import {
   UPDATE_CURRENT_CATEGORY
 } from '../../utils/actions';
 import { useStoreContext } from '../../utils/GlobalState';
+import { idbPromise } from '../../utils/helpers';
 
 function CategoryMenu() {
   // Now when we use this component, we immediately call upon the useStoreContext() Hook to retrieve the current state from the global state object and the dispatch() method to update state. 
@@ -15,7 +16,7 @@ function CategoryMenu() {
   const { categories } = state;
   
   // we'll query our category data, store it into the global state object, and then use the category data from the global state object to use it in the UI instead. 
-  const { data: categoryData } = useQuery(QUERY_CATEGORIES);
+  const { loading, data: categoryData } = useQuery(QUERY_CATEGORIES);
 
   // when this component loads and the response from the useQuery() Hook returns, the useEffect() Hook notices that categoryData is not undefined anymore and runs the dispatch() function, setting our category data to the global state!
   // The function runs immediately on load and passes in our function to update the global state and then the data that we're dependent on: categoryData and dispatch.
@@ -28,8 +29,19 @@ function CategoryMenu() {
         type: UPDATE_CATEGORIES,
         categories: categoryData.categories
       });
+      categoryData.categories.forEach(category => {
+        idbPromise('categories', 'put', category);
+      });
+    } 
+    else if (!loading) {
+      idbPromise('categories', 'get').then(categories => {
+        dispatch({
+          type: UPDATE_CATEGORIES,
+          categories: categories
+        });
+      });
     }
-  }, [categoryData, dispatch]);
+  }, [categoryData, loading, dispatch]);
 
   // A click handler to update our global state instead of using the function we receive as a prop from the Home component.
   // Now when we retrieve our category content from the server, we immediately save it to our global state object and use that data to print the list of categories to the page. We also set it up where when we click one of those categories, we save that category's _id value to the global state as well
