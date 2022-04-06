@@ -1,6 +1,21 @@
 # shop-shop
 State application
 
+LESSONS LEARNED
+Lesson 3
+    
+    Read and write data to IndexedDB.
+
+    Use React Hooks like useEffect().
+
+    Dispatch updates to the global state object.
+
+    Use IndexedDB within a React component.
+
+    Cache server-side data using IndexedDB.
+
+NOTES
+
 * Note that the starter code for this module includes a service worker. The service worker inclusion is no longer the default behavior for the most recent version of the create-react-app utility. When using this utility in the future to make an app from scratch, remember that some additional arguments are required to add a service worker to your app. For more information, refer to the Create React App documentation on creating a PWA (Links to an external site.).
 
 A lot of our state-across components relies on component-level Apollo query results. Those results affect the overall functionality that determines what we see in other components of our app, meaning other components need to constantly be made aware of those results, which is cumbersome. So by taking that returned data from the query result and storing it in a global state, we can effectively remove a lot of confusing data movement between components to keep them in sync.
@@ -41,3 +56,11 @@ Every Context object comes with two components, a Provider and Consumer.
 * Why would we save the current product locally and not to the global state?
     
     This is one of those cases where saving a single product to the global state object doesn't actually benefit us in any way, shape, or form. The single product's data will only be used in this specific component at this specific moment. This is the same reason why we don't worry about saving form entry data from the login or signup forms to global state; it only needs to exist when we're using those components!
+
+Lesson 3
+
+With the IndexedDB database, we'll accomplish the following two main performance enhancements:
+
+We'll store all of the product and category data from the database in IndexedDB. This way, even without an internet connection, users can still navigate the application, view items, and even add items to their shopping cart.
+
+If the user leaves the application and comes back later, we'll have persisted the items in their shopping cart. A user is more likely to complete their order if they don't have to add everything back into the cart!
