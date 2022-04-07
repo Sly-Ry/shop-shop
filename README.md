@@ -28,6 +28,22 @@ Lesson 4
 
     Using the useLazyQuery Hook to handle delayed requests.
 
+    Generated product, price, and checkout session IDs by using the Stripe API.
+
+    Captured a completed order by saving IndexedDB data in your MongoDB database.
+
+    Used the useLazyQuery Hook to delay executing a GraphQL query.
+
+    Used the React Context API to implement a Redux-like store.
+
+    Wrote Redux-like actions and reducers with the necessary tests in place.
+
+    Used global state across multiple React components.
+
+    Used IndexedDB within a React component.
+
+    Cached server-side data using IndexedDB.
+
 NOTES
 
 * Note that the starter code for this module includes a service worker. The service worker inclusion is no longer the default behavior for the most recent version of the create-react-app utility. When using this utility in the future to make an app from scratch, remember that some additional arguments are required to add a service worker to your app. For more information, refer to the Create React App documentation on creating a PWA (Links to an external site.).
@@ -88,3 +104,52 @@ Lesson 4
     We'll use the Stripe API to process payments, which includes making front-end and back-end changes. Don't worry, Stripe provides test credentials, so you won't need to use a real credit card to try it out.
 
     E-commerce is a big part of the web and an important skill to have, and Stripe is a developer-friendly entry point for learning about it. On the job, however, there's a good chance that you'll use other services, like Shopify, which have really taken over the e-commerce space.
+
+    It's important to test out an API before you commit to using it, whether it's a third-party API or one you built yourself.
+
+    We're using a test key copied from the Stripe documentation. Because it's only a test key, it's fine to include it directly in the JavaScript file. Once you create a real Stripe account, however, you would want to replace this with an environment variable (e.g., process.env.STRIPE_KEY).
+
+    We used the Stripe API to create a product ID and price ID for each item. We'll follow the Node.js code snippets that are available on Stripe's "Accept a payment" documentation (Links to an external site.).
+
+    Note that we need to multiply the price by 100, because Stripe stores prices in cents, not dollars.
+
+    In the Playground's query panel, write the following query:
+
+        ```
+        query checkout($products: [ID]!) {
+            checkout(products: $products) {
+                session
+            }
+        }
+        ```
+    Open the query variables panel and add the following JSON, making sure to replace the MongoDB IDs with IDs from your own database:
+
+        ```
+        {
+            "products": ["5e87b3d5de0eac6d5820bdfb", "5e87b3d5de0eac6d5820bdff"]
+        }
+        ```
+    You can quickly retrieve IDs from your own database using the following GraphQL query:
+
+        ```
+        query {
+            products {
+                _id
+            }
+        }
+        ```
+    Copy and paste the returned session ID into the HTML file in directory 'stripe-checkout'.
+
+    You can fill out the payment form with fake details, and Stripe will simulate processing it for you. For the credit card, use the number 4242 4242 4242 4242. The other details don't matter.
+
+    After you submit the form, though, the browser will redirect to a 404 page. If you inspect the URL, it will be something like https://example.com/success?session_id=<session>. The good and bad news is that it's working as designed. When we created the checkout session, we left the example.com domain as the success_url and cancel_url properties.
+
+    Every HTTP request includes headers that provide additional information about the request being made. The Content-Type header, for instance, lets you know what type of content is being requested, whether it's text/html or multipart/form-data.
+
+    By default, GraphQL resolvers don't have access to header information. The ApolloServer, however, can be configured to provide a context. One use for context is to preserve the headers from the original request, which the Shop-Shop app already does for you.
+
+    Unfortunately, we couldn't call useQuery(QUERY_CHECKOUT) in the click handler function. The useQuery Hook is meant to run when a component is first rendered, not at a later point in time based on a user action like a button click.
+    
+    Apollo provides another Hook for this exact situation. The useLazyQuery Hook can be declared like any other Hook but won't actually execute until you tell it to.
+
+    the useLazyQuery Hook can delay the execution of a GraphQL query until a user action is performed. So you could use this React Hook if you wanted to retrieve a list of items from the database after a user clicks a button?

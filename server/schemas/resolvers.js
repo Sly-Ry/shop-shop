@@ -1,6 +1,9 @@
 const { AuthenticationError } = require('apollo-server-express');
 const { User, Product, Category, Order } = require('../models');
 const { signToken } = require('../utils/auth');
+// We're using another test key copied from the Stripe documentation. 
+// Because it's only a test key, it's fine to include it directly in the JavaScript file. Once you create a real Stripe account, however, you would want to replace this with an environment variable (e.g., process.env.STRIPE_KEY)
+const stripe = require('stripe')('sk_test_4eC39HqLyjWDarjtT1zdp7dc');
 
 const resolvers = {
   Query: {
@@ -50,6 +53,51 @@ const resolvers = {
       }
 
       throw new AuthenticationError('Not logged in');
+    },
+    checkout: async (parent, args, context) => {
+      // To parse out the referring URL.
+      // This will give us the base domain that the request came from. Locally, that would be http://localhost:3001, since the GraphQL Playground is running on port 3001.
+      const url = new URL(context.headers.referer).origin;
+      const order = new Order({ products: args.products });
+      const { products } = await order.populate('products').execPopulate();
+
+      const line_items = [];
+
+      // The next step is to use the Stripe API to create a product ID and price ID for each item. 
+      // This loops over the products from the Order model and pushes a price ID for each one into a new line_items array.
+      for (let i = 0; i < products.length; i++) {
+        // generate product id
+        const product = await stripe.products.create({
+          name: products[i].name,
+          description: products[i].description,
+          // These image thumbnails won't display on the Stripe checkout page when testing locally, because Stripe can't download images that are being served from your personal computer's localhost. You will only see these images when you deploy the app to Heroku.
+          images: [`${url}/images/${products[i].image}`]
+        });
+      
+        // generate price id using the product id
+        const price = await stripe.prices.create({
+          product: product.id,
+          unit_amount: products[i].price * 100,
+          currency: 'usd',
+        });
+      
+        // add price id to the line items array
+        line_items.push({
+          price: price.id,
+          quantity: 1
+        });
+      }
+
+      //  Note that we need to multiply the price by 100, because Stripe stores prices in cents, not dollars
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items,
+        mode: 'payment',
+        success_url: `${url}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${url}`
+      });
+      
+      return { session: session.id };
     }
   },
   Mutation: {
