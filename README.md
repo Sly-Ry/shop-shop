@@ -14,6 +14,20 @@ Lesson 3
 
     Cache server-side data using IndexedDB.
 
+Lesson 4
+
+    Reading API documentation.
+
+    Building GraphQL queries and resolvers.
+
+    Defining client-side routes with React Router.
+
+    Generating a checkout session with the Stripe API.
+
+    Capturing a completed order in your own database.
+
+    Using the useLazyQuery Hook to handle delayed requests.
+
 NOTES
 
 * Note that the starter code for this module includes a service worker. The service worker inclusion is no longer the default behavior for the most recent version of the create-react-app utility. When using this utility in the future to make an app from scratch, remember that some additional arguments are required to add a service worker to your app. For more information, refer to the Create React App documentation on creating a PWA (Links to an external site.).
@@ -57,13 +71,20 @@ Every Context object comes with two components, a Provider and Consumer.
     
     This is one of those cases where saving a single product to the global state object doesn't actually benefit us in any way, shape, or form. The single product's data will only be used in this specific component at this specific moment. This is the same reason why we don't worry about saving form entry data from the login or signup forms to global state; it only needs to exist when we're using those components!
 
+
 Lesson 3
 
-With the IndexedDB database, we'll accomplish the following two main performance enhancements:
+    With the IndexedDB database, we'll accomplish the following two main performance enhancements:
 
-We'll store all of the product and category data from the database in IndexedDB. This way, even without an internet connection, users can still navigate the application, view items, and even add items to their shopping cart.
+    We'll store all of the product and category data from the database in IndexedDB. This way, even without an internet connection, users can still navigate the application, view items, and even add items to their shopping cart.
 
-If the user leaves the application and comes back later, we'll have persisted the items in their shopping cart. A user is more likely to complete their order if they don't have to add everything back into the cart!
+    If the user leaves the application and comes back later, we'll have persisted the items in their shopping cart. A user is more likely to complete their order if they don't have to add everything back into the cart!
 
-* We used a custom function, but there are libraries out there that offer help in working with browser storage. Try a library called LocalForage (Links to an external site.) if you're ever interested!
+    * We used a custom function, but there are libraries out there that offer help in working with browser storage. Try a library called LocalForage (Links to an external site.) if you're ever interested!
 
+
+Lesson 4
+
+    We'll use the Stripe API to process payments, which includes making front-end and back-end changes. Don't worry, Stripe provides test credentials, so you won't need to use a real credit card to try it out.
+
+    E-commerce is a big part of the web and an important skill to have, and Stripe is a developer-friendly entry point for learning about it. On the job, however, there's a good chance that you'll use other services, like Shopify, which have really taken over the e-commerce space.
